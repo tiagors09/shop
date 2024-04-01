@@ -4,6 +4,7 @@ class ClassName {
   final String description;
   final double price;
   final String imageUrl;
+  final bool isFavorite;
 
   ClassName({
     required this.id,
@@ -11,5 +12,6 @@ class ClassName {
     required this.description,
     required this.price,
     required this.imageUrl,
+    required this.isFavorite,
   });
 }
