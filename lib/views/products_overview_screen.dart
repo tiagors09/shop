@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/data/dummy_data.dart';
+import 'package:shop/widgets/product_item.dart';
 
 import '../models/product.dart';
 
@@ -23,11 +24,9 @@ class ProductsOverviewScreen extends StatelessWidget {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
-        itemBuilder: (ctx, i) {
-          return Text(
-            loadedProducts[i].title,
-          );
-        },
+        itemBuilder: (ctx, i) => ProductItem(
+          product: loadedProducts[i],
+        ),
       ),
     );
   }
