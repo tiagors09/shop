@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:shop/models/product.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/utils/app_routes.dart';
 
-class ProductItem extends StatelessWidget {
-  final Product product;
+import '../providers/product.dart';
 
+class ProductItem extends StatelessWidget {
   const ProductItem({
     super.key,
-    required this.product,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Product product = Provider.of<Product>(context);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GestureDetector(
@@ -24,7 +25,10 @@ class ProductItem extends StatelessWidget {
         child: GridTile(
           footer: GridTileBar(
             trailing: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                // TODO: lógica para adicionar
+                // produto ao carrinho
+              },
               icon: Icon(
                 Icons.shopping_cart,
                 color: Theme.of(context).colorScheme.secondary,
@@ -35,11 +39,13 @@ class ProductItem extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             backgroundColor: Colors.black87,
-            leading: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.favorite,
-                color: Theme.of(context).colorScheme.secondary,
+            leading: Consumer<Product>(
+              builder: (ctx, product, _) => IconButton(
+                onPressed: () => product.toogleFavorite(),
+                icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             ),
           ),
