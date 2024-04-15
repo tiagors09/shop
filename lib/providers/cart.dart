@@ -22,6 +22,8 @@ class Cart with ChangeNotifier {
 
   Map<String, CartItem> get items => {..._items};
 
+  int get itemsCount => _items.length;
+
   void addItem(Product product) {
     if (_items.containsKey(product.id)) {
       _items.update(
