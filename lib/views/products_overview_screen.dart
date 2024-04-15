@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/utils/app_routes.dart';
 
+import '../providers/cart.dart';
 import '../widgets/product_grid.dart';
 import '../providers/products.dart';
 
@@ -20,6 +22,18 @@ class ProductsOverviewScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Minha Loja'),
         actions: [
+          Consumer<Cart>(
+            child: IconButton(
+              onPressed: () => Navigator.of(context).pushNamed(
+                AppRoutes.cart.name,
+              ),
+              icon: const Icon(Icons.shopping_cart),
+            ),
+            builder: (ctx, cart, child) => Badge(
+              label: Text(cart.itemsCount.toString()),
+              child: child,
+            ),
+          ),
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) =>
                 selectedValue == FilterOptions.favorite
