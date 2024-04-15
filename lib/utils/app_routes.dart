@@ -1,5 +1,7 @@
 enum AppRoutes {
-  productDetail('/product-detail');
+  productDetail('/product-detail'),
+  cart('/cart'),
+  productsOverviewScreen('/products-overview-screen');
 
   final String name;
 
