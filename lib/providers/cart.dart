@@ -20,7 +20,7 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  final Map<String, CartItem> _items = {};
+  Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items => {..._items};
 
@@ -29,7 +29,7 @@ class Cart with ChangeNotifier {
   double get totalAmount => _items.values.fold<double>(
         0.0,
         (total, currentCartItem) =>
-            total + (currentCartItem.price * currentCartItem.quantity),
+            (currentCartItem.price * currentCartItem.quantity),
       );
 
   void addItem(Product product) {
@@ -60,6 +60,11 @@ class Cart with ChangeNotifier {
 
   void removeItem(String productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clear() {
+    _items = {};
     notifyListeners();
   }
 }
