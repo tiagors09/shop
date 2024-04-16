@@ -29,7 +29,7 @@ class Cart with ChangeNotifier {
   double get totalAmount => _items.values.fold<double>(
         0.0,
         (total, currentCartItem) =>
-            (currentCartItem.price * currentCartItem.quantity),
+            total + (currentCartItem.price * currentCartItem.quantity),
       );
 
   void addItem(Product product) {
