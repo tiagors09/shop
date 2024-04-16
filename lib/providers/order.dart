@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:shop/providers/cart.dart' show CartItem;
+import 'package:shop/providers/cart.dart';
 
 class Order {
   final String id;
@@ -22,13 +22,13 @@ class Orders with ChangeNotifier {
 
   List<Order> get order => [..._orders];
 
-  void addOrder(List<CartItem> products, double total) {
+  void addOrder(Cart cart) {
     _orders.insert(
       0,
       Order(
         id: Random().nextDouble().toString(),
-        total: total,
-        products: products,
+        total: cart.totalAmount,
+        products: cart.items.values.toList(),
         date: DateTime.now(),
       ),
     );
