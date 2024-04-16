@@ -5,6 +5,7 @@ import 'package:shop/providers/products.dart';
 import 'package:shop/utils/app_routes.dart';
 import 'package:shop/views/cart_screen.dart';
 import 'package:shop/views/product_detail_screen.dart';
+import 'package:shop/views/products_overview_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,6 +32,8 @@ class MyApp extends StatelessWidget {
         routes: {
           AppRoutes.productDetail.name: (ctx) => const ProductDetailScreen(),
           AppRoutes.cart.name: (ctx) => const CartScreen(),
+          AppRoutes.productsOverviewScreen.name: (ctx) =>
+              const ProductsOverviewScreen(),
         },
         initialRoute: AppRoutes.productsOverviewScreen.name,
         title: 'Minha Loja',
@@ -38,6 +41,7 @@ class MyApp extends StatelessWidget {
           colorScheme: theme.colorScheme.copyWith(
             primary: Colors.purple,
             secondary: Colors.deepOrange,
+            error: Colors.red,
           ),
           fontFamily: 'Lato',
         ),
