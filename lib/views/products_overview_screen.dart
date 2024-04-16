@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/widgets/app_drawer.dart';
 
 import '../providers/cart.dart';
 import '../widgets/product_grid.dart';
@@ -19,6 +20,7 @@ class ProductsOverviewScreen extends StatelessWidget {
     final Products products = Provider.of(context);
 
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('Minha Loja'),
         actions: [
