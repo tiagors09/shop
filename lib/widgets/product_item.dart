@@ -27,7 +27,22 @@ class ProductItem extends StatelessWidget {
         child: GridTile(
           footer: GridTileBar(
             trailing: IconButton(
-              onPressed: () => cart.addItem(product),
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Produto adicionado com sucesso!'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'DESFAZER',
+                      onPressed: () => cart.removeSingleItem(
+                        product.id,
+                      ),
+                    ),
+                  ),
+                );
+                cart.addItem(product);
+              },
               icon: Icon(
                 Icons.shopping_cart,
                 color: Theme.of(context).colorScheme.secondary,
