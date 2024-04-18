@@ -41,6 +41,12 @@ class AppDrawer extends StatelessWidget {
             Icons.payment,
             AppRoutes.orders,
           ),
+          ...drawnerItemm(
+            context,
+            'Gerenciar Produtos',
+            Icons.edit,
+            AppRoutes.products,
+          )
         ],
       ),
     );
