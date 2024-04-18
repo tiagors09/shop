@@ -3,7 +3,8 @@ enum AppRoutes {
   cart('/cart'),
   productsOverviewScreen('/products-overview-screen'),
   orders('/orders'),
-  products('/products');
+  products('/products'),
+  productForm('/product-form');
 
   final String name;
 
