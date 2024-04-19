@@ -36,7 +36,7 @@ class ProductItem extends StatelessWidget {
                     action: SnackBarAction(
                       label: 'DESFAZER',
                       onPressed: () => cart.removeSingleItem(
-                        product.id,
+                        product.id!,
                       ),
                     ),
                   ),
