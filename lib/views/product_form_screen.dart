@@ -1,7 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/providers/products.dart';
 
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({super.key});
@@ -30,6 +30,23 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImageUrl);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_formData.isEmpty) {
+      final product = ModalRoute.of(context)?.settings.arguments as Product;
+
+      _formData['id'] = product.id;
+      _formData['title'] = product.title;
+      _formData['description'] = product.description;
+      _formData['price'] = product.price;
+      _formData['imageUrl'] = product.imageUrl;
+
+      _imageUrlController.text = _formData['imageUrl'];
+    }
   }
 
   @override
@@ -105,13 +122,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     if (!isValid) return;
 
     _form.currentState!.save();
+
     final newProduct = Product(
-      id: Random().nextDouble().toString(),
+      id: _formData['id'],
       title: _formData['title'],
       description: _formData['description'],
       price: _formData['price'],
       imageUrl: _formData['imageUrl'],
     );
+
+    final products = Provider.of<Products>(
+      context,
+      listen: false,
+    );
+
+    if (_formData['id'] == null) {
+      products.addProduct(newProduct);
+    } else {
+      products.updateProduct(newProduct);
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -133,6 +164,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _formData['title'],
                 validator: _titleValidator,
                 onSaved: (value) => _formData['title'] = value!,
                 decoration: const InputDecoration(
@@ -144,6 +176,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['price'].toString(),
                 validator: _priceValidator,
                 onSaved: (value) => _formData['price'] = double.parse(value!),
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(
@@ -159,6 +192,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 ),
               ),
               TextFormField(
+                initialValue: _formData['description'],
                 validator: _descriptionValidator,
                 onSaved: (value) => _formData['description'] = value!,
                 focusNode: _descriptionFocusNode,
