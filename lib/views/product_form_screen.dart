@@ -36,9 +36,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_formData.isEmpty) {
-      final product = ModalRoute.of(context)?.settings.arguments as Product;
+    final product = ModalRoute.of(context)?.settings.arguments;
 
+    if (_formData.isEmpty && product != null) {
+      product as Product;
       _formData['id'] = product.id;
       _formData['title'] = product.title;
       _formData['description'] = product.description;
@@ -176,7 +177,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 },
               ),
               TextFormField(
-                initialValue: _formData['price'].toString(),
+                initialValue: _formData['price'] ?? '',
                 validator: _priceValidator,
                 onSaved: (value) => _formData['price'] = double.parse(value!),
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(
