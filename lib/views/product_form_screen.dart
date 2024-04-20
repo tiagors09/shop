@@ -177,7 +177,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 },
               ),
               TextFormField(
-                initialValue: _formData['price'] ?? '',
+                initialValue: _formData['price'] == null
+                    ? ''
+                    : _formData['price'].toString(),
                 validator: _priceValidator,
                 onSaved: (value) => _formData['price'] = double.parse(value!),
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(
