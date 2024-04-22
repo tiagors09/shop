@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
 
-import '../utils/constants.dart';
+import '../utils/environment.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
@@ -13,7 +13,7 @@ class Products with ChangeNotifier {
 
   bool _showFavoriteOnly = false;
 
-  final _url = Uri.parse(Constants.baseUrl + Constants.productsPath);
+  final _url = Uri.parse(Environment.baseUrl + Environment.productsPath);
 
   List<Product> get items => _showFavoriteOnly
       ? _items.where((prod) => prod.isFavorite).toList()
@@ -46,10 +46,10 @@ class Products with ChangeNotifier {
       ),
     )
         .then(
-      (value) {
+      (response) {
         _items.add(
           Product(
-            id: Random().nextDouble().toString(),
+            id: json.decode(response.body)['name'],
             title: product.title,
             description: product.description,
             price: product.price,
