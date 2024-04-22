@@ -143,12 +143,30 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
 
     if (_formData['id'] == null) {
-      products.addProduct(newProduct).then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
-      });
+      products.addProduct(newProduct).then(
+        (_) {
+          setState(() {
+            _isLoading = false;
+          });
+          Navigator.of(context).pop();
+        },
+      ).catchError(
+        (error) {
+          return showDialog<Null>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Ocorreu um erro!'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Ok'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
     } else {
       products.updateProduct(newProduct);
     }
