@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
@@ -62,7 +60,7 @@ class Products with ChangeNotifier {
   }
 
   void updateProduct(Product product) {
-    if (product == null || product.id != null) {
+    if (product.id != null) {
       return;
     }
 

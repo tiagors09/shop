@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.productForm.name: (ctx) => const ProductFormScreen(),
         },
         initialRoute: AppRoutes.productsOverviewScreen.name,
-        title: 'Minha Loja',
+        title: 'Shop',
         theme: ThemeData(
           colorScheme: theme.colorScheme.copyWith(
             primary: Colors.purple,
