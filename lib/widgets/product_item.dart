@@ -22,21 +22,8 @@ class ProductItem extends StatelessWidget {
       ).deleteProduct(
         product.id!,
       );
-      Navigator.of(ctx).pop();
     } catch (e) {
-      await showDialog(
-        context: ctx,
-        builder: (ctx) => AlertDialog(
-          title: const Text(Environment.dialogTitle),
-          content: Text(e.toString()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Fechar'),
-            ),
-          ],
-        ),
-      );
+      rethrow;
     }
   }
 
@@ -71,7 +58,24 @@ class ProductItem extends StatelessWidget {
                         const Text('Tem certeza que deseja excluir produto?'),
                     actions: [
                       TextButton(
-                        onPressed: () => _onPressed(context),
+                        onPressed: () {
+                          _onPressed(context).catchError((e) {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text(Environment.dialogTitle),
+                                content: Text(e.toString()),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(),
+                                    child: const Text('Fechar'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                          Navigator.of(context).pop();
+                        },
                         child: const Text('Sim'),
                       ),
                       TextButton(

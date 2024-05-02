@@ -26,7 +26,23 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void initState() {
     super.initState();
-    _onRefresh();
+    _onRefresh().catchError((e) => _showErrorMessage(e.toString()));
+  }
+
+  void _showErrorMessage(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(Environment.dialogTitle),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _onRefresh() async {
@@ -36,19 +52,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         listen: false,
       ).loadProducts();
     } catch (e) {
-      await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text(Environment.dialogTitle),
-          content: Text(e.toString()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Fechar'),
-            )
-          ],
-        ),
-      );
+      rethrow;
     } finally {
       setState(() {
         _isLoading = false;
@@ -102,7 +106,10 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-              onRefresh: _onRefresh,
+              onRefresh: () {
+                _onRefresh().catchError((e) => _showErrorMessage(e.toString()));
+                return Future.value();
+              },
               child: const ProductGrid(),
             ),
     );
