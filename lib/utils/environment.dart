@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract class Environment {
   static const baseUrl = String.fromEnvironment('BASE_URL');
   static const productsPath = String.fromEnvironment('PRODUCTS_PATH');
@@ -18,4 +20,23 @@ abstract class Environment {
 
   // Título da caixa de diálogo
   static const String dialogTitle = "Opsie! Probleminha";
+
+  static Future<Null> showErrorMessage(
+    BuildContext context,
+    String content,
+  ) {
+    return showDialog<Null>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(Environment.dialogTitle),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
 }
