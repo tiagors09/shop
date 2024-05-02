@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/utils/environment.dart';
 
 import '../providers/products.dart';
 
@@ -12,6 +13,32 @@ class ProductItem extends StatelessWidget {
     super.key,
     required this.product,
   });
+
+  Future<void> _onPressed(BuildContext ctx) async {
+    try {
+      await Provider.of<Products>(
+        ctx,
+        listen: false,
+      ).deleteProduct(
+        product.id!,
+      );
+      Navigator.of(ctx).pop();
+    } catch (e) {
+      await showDialog(
+        context: ctx,
+        builder: (ctx) => AlertDialog(
+          title: const Text(Environment.dialogTitle),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Fechar'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +71,7 @@ class ProductItem extends StatelessWidget {
                         const Text('Tem certeza que deseja excluir produto?'),
                     actions: [
                       TextButton(
-                        onPressed: () {
-                          Provider.of<Products>(
-                            context,
-                            listen: false,
-                          ).deleteProduct(
-                            product.id!,
-                          );
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: () => _onPressed(context),
                         child: const Text('Sim'),
                       ),
                       TextButton(
