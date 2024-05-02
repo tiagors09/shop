@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/providers/products.dart';
+import 'package:shop/utils/environment.dart';
 
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({super.key});
@@ -118,7 +119,23 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         (endsWithPng || endsWithJpg || endsWithJpeg);
   }
 
-  void _saveForm() {
+  Future<void> _showErrorMessage(Exception e) {
+    return showDialog<Null>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(Environment.dialogTitle),
+        content: Text(e.toString()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveForm() async {
     bool isValid = _form.currentState!.validate();
 
     if (!isValid) return;
@@ -142,33 +159,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       listen: false,
     );
 
-    if (_formData['id'] == null) {
-      products.addProduct(newProduct).then(
-        (_) {
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.of(context).pop();
-        },
-      ).catchError(
-        (error) {
-          return showDialog<Null>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Ocorreu um erro!'),
-              content: Text(error.toString()),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Ok'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    } else {
-      products.updateProduct(newProduct);
+    try {
+      if (_formData['id'] == null) {
+        await products.addProduct(newProduct);
+      } else {
+        await products.updateProduct(newProduct);
+      }
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      await _showErrorMessage(e as Exception);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
