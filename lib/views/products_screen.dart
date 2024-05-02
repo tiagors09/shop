@@ -36,17 +36,21 @@ class ProductsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Consumer<Products>(
-            builder: (ctx, products, _) => ListView.builder(
-              itemCount: products.itemsCount,
-              itemBuilder: (ctx, i) => Column(
-                children: [
-                  ProductItem(
-                    product: products.items[i],
+            builder: (ctx, products, _) => products.itemsCount > 0
+                ? ListView.builder(
+                    itemCount: products.itemsCount,
+                    itemBuilder: (ctx, i) => Column(
+                      children: [
+                        ProductItem(
+                          product: products.items[i],
+                        ),
+                        const Divider(),
+                      ],
+                    ),
+                  )
+                : const Center(
+                    child: Text('Não há produtos para serem exibidos'),
                   ),
-                  const Divider(),
-                ],
-              ),
-            ),
           ),
         ),
       ),
