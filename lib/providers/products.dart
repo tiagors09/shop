@@ -53,78 +53,91 @@ class Products with ChangeNotifier {
         notifyListeners();
       }
     } catch (_) {
-      throw Exception(Environment.allProductsError);
+      throw const HttpException(Environment.allProductsError);
     }
+
     return Future.value();
   }
 
   Future<void> addProduct(Product product) async {
-    final response = await http.post(
-      Uri.parse('$_url.json'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: product.toJSON(),
-    );
-
-    if (response.statusCode >= 400) {
-      throw const HttpException(Environment.insertError);
-    }
-
-    _items.add(
-      Product(
-        id: json.decode(response.body)['name'],
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-      ),
-    );
-    notifyListeners();
-  }
-
-  Future<void> updateProduct(Product product) async {
-    final index = _items.indexWhere((prod) => prod.id == product.id);
-
-    if (index >= 0) {
-      final olderProduct = _items[index];
-      _items[index] = product;
-      notifyListeners();
-
-      final response = await http.patch(
-        Uri.parse(
-          '$_url/${product.id}.json',
-        ),
+    try {
+      final response = await http.post(
+        Uri.parse('$_url.json'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
         body: product.toJSON(),
       );
 
       if (response.statusCode >= 400) {
-        _items[index] = olderProduct;
-        notifyListeners();
-        throw const HttpException(Environment.updateError);
+        throw const HttpException(Environment.insertError);
       }
+
+      _items.add(
+        Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+        ),
+      );
+      notifyListeners();
+    } catch (_) {
+      throw const HttpException(Environment.insertError);
+    }
+  }
+
+  Future<void> updateProduct(Product product) async {
+    try {
+      final index = _items.indexWhere((prod) => prod.id == product.id);
+
+      if (index >= 0) {
+        final olderProduct = _items[index];
+        _items[index] = product;
+        notifyListeners();
+
+        final response = await http.patch(
+          Uri.parse(
+            '$_url/${product.id}.json',
+          ),
+          body: product.toJSON(),
+        );
+
+        if (response.statusCode >= 400) {
+          _items[index] = olderProduct;
+          notifyListeners();
+          throw const HttpException(Environment.updateError);
+        }
+      }
+    } catch (_) {
+      throw const HttpException(Environment.updateError);
     }
   }
 
   Future<void> deleteProduct(String id) async {
-    final index = _items.indexWhere((prod) => prod.id == id);
-    if (index >= 0) {
-      final product = _items[index];
+    try {
+      final index = _items.indexWhere((prod) => prod.id == id);
+      if (index >= 0) {
+        final product = _items[index];
 
-      _items.remove(product);
-      notifyListeners();
-
-      final response = await http.delete(
-        Uri.parse(
-          '$_url/${product.id}.json',
-        ),
-      );
-
-      if (response.statusCode >= 400) {
-        _items.insert(index, product);
+        _items.remove(product);
         notifyListeners();
-        throw const HttpException(Environment.deleteError);
+
+        final response = await http.delete(
+          Uri.parse(
+            '$_url/${product.id}.json',
+          ),
+        );
+
+        if (response.statusCode >= 400) {
+          _items.insert(index, product);
+          notifyListeners();
+          throw const HttpException(Environment.deleteError);
+        }
       }
+    } catch (e) {
+      throw const HttpException(Environment.deleteError);
     }
   }
 }
