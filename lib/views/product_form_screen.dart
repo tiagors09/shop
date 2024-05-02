@@ -119,22 +119,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         (endsWithPng || endsWithJpg || endsWithJpeg);
   }
 
-  Future<void> _showErrorMessage(Exception e) {
-    return showDialog<Null>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text(Environment.dialogTitle),
-        content: Text(e.toString()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Fechar'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _saveForm() async {
     bool isValid = _form.currentState!.validate();
 
@@ -159,21 +143,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       listen: false,
     );
 
-    try {
-      if (_formData['id'] == null) {
-        await products.addProduct(newProduct);
-      } else {
-        await products.updateProduct(newProduct);
-      }
+    Future<void> Function(Product) operation;
 
-      Navigator.of(context).pop();
-    } catch (e) {
-      await _showErrorMessage(e as Exception);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    if (_formData['id'] == null) {
+      operation = products.addProduct;
+    } else {
+      operation = products.updateProduct;
     }
+
+    operation(newProduct).then(
+      (_) {
+        Navigator.of(context).pop();
+        setState(() {
+          _isLoading = false;
+        });
+      },
+    ).catchError(
+      (e) => Environment.showErrorMessage(
+        context,
+        e.toString(),
+      ),
+    );
   }
 
   @override

@@ -14,17 +14,23 @@ class ProductItem extends StatelessWidget {
     required this.product,
   });
 
-  Future<void> _onPressed(BuildContext ctx) async {
-    try {
-      await Provider.of<Products>(
-        ctx,
-        listen: false,
-      ).deleteProduct(
-        product.id!,
-      );
-    } catch (e) {
-      rethrow;
-    }
+  void _onPressed(BuildContext ctx) {
+    Provider.of<Products>(
+      ctx,
+      listen: false,
+    )
+        .deleteProduct(
+          product.id!,
+        )
+        .then(
+          (_) => Navigator.of(ctx).pop(),
+        )
+        .catchError(
+          (e) => Environment.showErrorMessage(
+            ctx,
+            e.toString(),
+          ),
+        );
   }
 
   @override
@@ -58,24 +64,7 @@ class ProductItem extends StatelessWidget {
                         const Text('Tem certeza que deseja excluir produto?'),
                     actions: [
                       TextButton(
-                        onPressed: () {
-                          _onPressed(context).catchError((e) {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: const Text(Environment.dialogTitle),
-                                content: Text(e.toString()),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(ctx).pop(),
-                                    child: const Text('Fechar'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: () => _onPressed(context),
                         child: const Text('Sim'),
                       ),
                       TextButton(

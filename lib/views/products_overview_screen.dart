@@ -26,39 +26,25 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void initState() {
     super.initState();
-    _onRefresh().catchError((e) => _showErrorMessage(e.toString()));
+    _onRefresh();
   }
 
-  void _showErrorMessage(String msg) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text(Environment.dialogTitle),
-        content: Text(msg),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Fechar'),
-          )
-        ],
-      ),
-    );
-  }
+  void _onRefresh() {
+    Provider.of<Products>(
+      context,
+      listen: false,
+    ).loadProducts().catchError(
+          (e) => Environment.showErrorMessage(
+            context,
+            e,
+          ),
+        );
 
-  Future<void> _onRefresh() async {
-    try {
-      await Provider.of<Products>(
-        context,
-        listen: false,
-      ).loadProducts();
-    } catch (e) {
-      rethrow;
-    } finally {
-      setState(() {
+    setState(
+      () {
         _isLoading = false;
-      });
-    }
-    return Future.value();
+      },
+    );
   }
 
   @override
@@ -107,7 +93,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             )
           : RefreshIndicator(
               onRefresh: () {
-                _onRefresh().catchError((e) => _showErrorMessage(e.toString()));
+                _onRefresh();
                 return Future.value();
               },
               child: const ProductGrid(),
