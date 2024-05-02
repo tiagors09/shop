@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/utils/environment.dart';
 import 'package:shop/widgets/app_drawer.dart';
 
 import '../providers/cart.dart';
@@ -12,8 +13,43 @@ enum FilterOptions {
   all,
 }
 
-class ProductsOverviewScreen extends StatelessWidget {
+class ProductsOverviewScreen extends StatefulWidget {
   const ProductsOverviewScreen({super.key});
+
+  @override
+  State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
+}
+
+class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  var _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _onRefresh();
+  }
+
+  Future<void> _onRefresh() async {
+    try {
+      await Provider.of<Products>(
+        context,
+        listen: false,
+      ).loadProducts();
+    } catch (e) {
+      await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text(Environment.dialogTitle),
+          content: Text(e.toString()),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+    return Future.value();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +91,14 @@ class ProductsOverviewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const ProductGrid(),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: const ProductGrid(),
+            ),
     );
   }
 }
