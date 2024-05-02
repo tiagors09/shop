@@ -55,8 +55,6 @@ class Products with ChangeNotifier {
     } catch (_) {
       throw const HttpException(Environment.allProductsError);
     }
-
-    return Future.value();
   }
 
   Future<void> addProduct(Product product) async {
@@ -68,10 +66,6 @@ class Products with ChangeNotifier {
         },
         body: product.toJSON(),
       );
-
-      if (response.statusCode >= 400) {
-        throw const HttpException(Environment.insertError);
-      }
 
       _items.add(
         Product(
@@ -93,22 +87,15 @@ class Products with ChangeNotifier {
       final index = _items.indexWhere((prod) => prod.id == product.id);
 
       if (index >= 0) {
-        final olderProduct = _items[index];
-        _items[index] = product;
-        notifyListeners();
-
-        final response = await http.patch(
+        await http.patch(
           Uri.parse(
             '$_url/${product.id}.json',
           ),
           body: product.toJSON(),
         );
 
-        if (response.statusCode >= 400) {
-          _items[index] = olderProduct;
-          notifyListeners();
-          throw const HttpException(Environment.updateError);
-        }
+        _items[index] = product;
+        notifyListeners();
       }
     } catch (_) {
       throw const HttpException(Environment.updateError);
@@ -121,20 +108,14 @@ class Products with ChangeNotifier {
       if (index >= 0) {
         final product = _items[index];
 
-        _items.remove(product);
-        notifyListeners();
-
-        final response = await http.delete(
+        await http.delete(
           Uri.parse(
             '$_url/${product.id}.json',
           ),
         );
 
-        if (response.statusCode >= 400) {
-          _items.insert(index, product);
-          notifyListeners();
-          throw const HttpException(Environment.deleteError);
-        }
+        _items.remove(product);
+        notifyListeners();
       }
     } catch (e) {
       throw const HttpException(Environment.deleteError);
