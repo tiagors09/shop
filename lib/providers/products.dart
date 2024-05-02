@@ -59,69 +59,72 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_url.json'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: product.toJSON(),
-      );
+    final response = await http.post(
+      Uri.parse('$_url.json'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: product.toJSON(),
+    );
 
-      _items.add(
-        Product(
-          id: json.decode(response.body)['name'],
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          imageUrl: product.imageUrl,
-        ),
-      );
-      notifyListeners();
-    } catch (_) {
-      throw Exception(Environment.insertError);
+    if (response.statusCode >= 400) {
+      throw const HttpException(Environment.insertError);
     }
+
+    _items.add(
+      Product(
+        id: json.decode(response.body)['name'],
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      ),
+    );
+    notifyListeners();
   }
 
   Future<void> updateProduct(Product product) async {
-    try {
-      final index = _items.indexWhere((prod) => prod.id == product.id);
-      if (index >= 0) {
-        await http.patch(
-          Uri.parse(
-            '$_url/${product.id}.json',
-          ),
-          body: product.toJSON(),
-        );
-        _items[index] = product;
+    final index = _items.indexWhere((prod) => prod.id == product.id);
+
+    if (index >= 0) {
+      final olderProduct = _items[index];
+      _items[index] = product;
+      notifyListeners();
+
+      final response = await http.patch(
+        Uri.parse(
+          '$_url/${product.id}.json',
+        ),
+        body: product.toJSON(),
+      );
+
+      if (response.statusCode >= 400) {
+        _items[index] = olderProduct;
         notifyListeners();
+        throw const HttpException(Environment.updateError);
       }
-    } catch (e) {
-      throw Exception(Environment.updateError);
     }
   }
 
   Future<void> deleteProduct(String id) async {
-    try {
-      final index = _items.indexWhere((prod) => prod.id == id);
-      if (index >= 0) {
-        final product = _items[index];
+    final index = _items.indexWhere((prod) => prod.id == id);
+    if (index >= 0) {
+      final product = _items[index];
 
-        _items.remove(product);
+      _items.remove(product);
+      notifyListeners();
+
+      final response = await http.delete(
+        Uri.parse(
+          '$_url/${product.id}.json',
+        ),
+      );
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
         notifyListeners();
-
-        final response = await http.delete(
-          Uri.parse(
-            '$_url/${product.id}.json',
-          ),
-        );
-
-        if (response.statusCode >= 400) {
-          _items.insert(index, product);
-        }
+        throw const HttpException(Environment.deleteError);
       }
-    } catch (e) {
-      throw Exception(Environment.deleteError);
     }
   }
 }
