@@ -41,6 +41,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         builder: (ctx) => AlertDialog(
           title: const Text(Environment.dialogTitle),
           content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Fechar'),
+            )
+          ],
         ),
       );
     } finally {
