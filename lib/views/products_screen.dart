@@ -6,12 +6,17 @@ import 'package:shop/widgets/product_item.dart';
 
 import '../utils/app_routes.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
-  Future<void> _refreshProducts(BuildContext ctx) {
+  @override
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  Future<void> _onRefresh() {
     return Provider.of<Products>(
-      ctx,
+      context,
       listen: false,
     ).loadProducts();
   }
@@ -31,13 +36,13 @@ class ProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProducts(context),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Consumer<Products>(
-            builder: (ctx, products, _) => products.itemsCount > 0
-                ? ListView.builder(
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Consumer<Products>(
+          builder: (ctx, products, _) => products.itemsCount > 0
+              ? RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
                     itemCount: products.itemsCount,
                     itemBuilder: (ctx, i) => Column(
                       children: [
@@ -47,11 +52,11 @@ class ProductsScreen extends StatelessWidget {
                         const Divider(),
                       ],
                     ),
-                  )
-                : const Center(
-                    child: Text('Não há produtos para serem exibidos'),
                   ),
-          ),
+                )
+              : const Center(
+                  child: Text('Não há produtos para serem exibidos'),
+                ),
         ),
       ),
     );

@@ -29,20 +29,30 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     _onRefresh();
   }
 
-  void _onRefresh() {
-    Provider.of<Products>(
+  Future<void> _onRefresh() {
+    return Provider.of<Products>(
       context,
       listen: false,
-    ).loadProducts().catchError(
-          (e) => Environment.showErrorMessage(
-            context,
-            e,
+    )
+        .loadProducts()
+        .then(
+          (_) => setState(
+            () {
+              _isLoading = false;
+            },
           ),
+        )
+        .catchError(
+      (e) {
+        Environment.showErrorMessage(
+          context,
+          e,
         );
-
-    setState(
-      () {
-        _isLoading = false;
+        setState(
+          () {
+            _isLoading = false;
+          },
+        );
       },
     );
   }
@@ -92,10 +102,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-              onRefresh: () {
-                _onRefresh();
-                return Future.value();
-              },
+              onRefresh: _onRefresh,
               child: const ProductGrid(),
             ),
     );

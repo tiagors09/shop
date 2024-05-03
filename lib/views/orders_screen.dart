@@ -19,8 +19,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   void initState() {
     super.initState();
+    _onRefresh();
+  }
 
-    Provider.of<Orders>(
+  Future<void> _onRefresh() {
+    return Provider.of<Orders>(
       context,
       listen: false,
     )
@@ -58,13 +61,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
             )
           : Consumer<Orders>(
               builder: (ctx, orders, child) => orders.itemsCount > 0
-                  ? ListView.builder(
-                      itemCount: orders.itemsCount,
-                      itemBuilder: (ctx, i) => OrderWidget(
-                        order: orders.items[i],
+                  ? RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      child: ListView.builder(
+                        itemCount: orders.itemsCount,
+                        itemBuilder: (ctx, i) => OrderWidget(
+                          order: orders.items[i],
+                        ),
                       ),
                     )
-                  : const Center(child: Text('Não há pedidos')),
+                  : const Center(
+                      child: Text('Não há pedidos'),
+                    ),
             ),
     );
   }
