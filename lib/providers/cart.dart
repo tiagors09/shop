@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,28 @@ class CartItem {
     this.quantity = 1,
     required this.price,
   });
+
+  String toJson() {
+    return jsonEncode(
+      {
+        'id': id,
+        'productId': productId,
+        'title': title,
+        'quantity': quantity,
+        'price': price,
+      },
+    );
+  }
+
+  static CartItem fromJson(Map<String, dynamic> res) {
+    return CartItem(
+      id: res['id'],
+      productId: res['productId'],
+      title: res['title'],
+      price: res['price'],
+      quantity: res['quantity'],
+    );
+  }
 }
 
 class Cart with ChangeNotifier {
@@ -83,5 +106,16 @@ class Cart with ChangeNotifier {
   void clear() {
     _items = {};
     notifyListeners();
+  }
+
+  String toJson() {
+    return jsonEncode(
+      {
+        'items': items.values.map((cartItem) => cartItem.toJson()).toList(),
+        'itemsCount': itemsCount,
+        'totalAmount': totalAmount,
+        'date': DateTime.now().toIso8601String(),
+      },
+    );
   }
 }

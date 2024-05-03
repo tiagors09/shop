@@ -33,4 +33,15 @@ class Product with ChangeNotifier {
       'isFavorite': isFavorite,
     });
   }
+
+  static Product fromJson(Map<String, dynamic> res) {
+    return Product(
+      id: res['id'],
+      title: res['title'],
+      description: res['description'],
+      price: res['price'],
+      imageUrl: res['imageUrl'],
+      isFavorite: res['isFavorite'],
+    );
+  }
 }

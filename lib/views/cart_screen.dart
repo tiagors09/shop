@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/order.dart';
+import 'package:shop/utils/environment.dart';
 import 'package:shop/widgets/cart_item_widget.dart';
 
 import '../providers/cart.dart';
@@ -57,16 +58,7 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      Provider.of<Orders>(
-                        context,
-                        listen: false,
-                      ).addOrder(cart);
-                      cart.clear();
-                    },
-                    child: const Text('COMPRAR'),
-                  ),
+                  OrderButton(cart: cart),
                 ],
               ),
             ),
@@ -82,5 +74,55 @@ class CartScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    super.key,
+    required this.cart,
+  });
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? const CircularProgressIndicator()
+        : TextButton(
+            onPressed: widget.cart.totalAmount == 0
+                ? null
+                : () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+
+                    try {
+                      await Provider.of<Orders>(
+                        context,
+                        listen: false,
+                      ).addOrder(widget.cart);
+                    } catch (e) {
+                      Environment.showErrorMessage(
+                        context,
+                        e.toString(),
+                      );
+                    } finally {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+
+                    widget.cart.clear();
+                  },
+            child: const Text('COMPRAR'),
+          );
   }
 }

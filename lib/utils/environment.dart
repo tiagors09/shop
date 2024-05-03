@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 abstract class Environment {
   static const baseUrl = String.fromEnvironment('BASE_URL');
   static const productsPath = String.fromEnvironment('PRODUCTS_PATH');
+  static const ordersPath = String.fromEnvironment('ORDERS_PATH');
 
-  // Mensagens fofinhas de erro
+  static const String purchaseError =
+      "Oh não! Parece que encontramos um probleminha durante a transação de compra. 🛒";
+  static const String allTransactionsError =
+      "Ops! Parece que algo deu errado ao recuperar todas as transações. 🐾";
+
   static const String updateError =
       "Oops! Parece que encontramos um probleminha ao atualizar o produto. 🙈";
   static const String insertError =
@@ -14,11 +19,9 @@ abstract class Environment {
   static const String readError =
       "Eita! Algo deu errado ao ler o produto. Será que ele se escondeu? 🙊";
 
-  // Mensagem de erro para todos os produtos
   static const String allProductsError =
       "Ops! Algo deu errado ao processar todos os produtos. 🐱";
 
-  // Título da caixa de diálogo
   static const String dialogTitle = "Opsie! Probleminha";
 
   static Future<Null> showErrorMessage(

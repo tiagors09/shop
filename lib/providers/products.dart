@@ -34,21 +34,12 @@ class Products with ChangeNotifier {
         Uri.parse('$_url.json'),
       );
 
-      Map<String, dynamic>? data = jsonDecode(response.body) ?? {};
+      Map<String, dynamic> data = jsonDecode(response.body) ?? {};
 
       _items.clear();
-      if (data!.isNotEmpty || response.statusCode == HttpStatus.ok) {
+      if (data.isNotEmpty || response.statusCode == HttpStatus.ok) {
         data.forEach((productId, productData) {
-          _items.add(
-            Product(
-              id: productId,
-              title: productData['title'],
-              description: productData['description'],
-              price: double.parse(productData['price'].toString()),
-              imageUrl: productData['imageUrl'],
-              isFavorite: productData['isFavorite'],
-            ),
-          );
+          _items.add(Product.fromJson({...productData, 'id': productId}));
         });
         notifyListeners();
       }
