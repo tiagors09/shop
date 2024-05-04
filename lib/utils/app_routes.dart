@@ -4,7 +4,8 @@ enum AppRoutes {
   productsOverviewScreen('/products-overview-screen'),
   orders('/orders'),
   products('/products'),
-  productForm('/product-form');
+  productForm('/product-form'),
+  auth('/');
 
   final String name;
 
