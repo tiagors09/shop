@@ -1,8 +1,0 @@
-web-renderer: auto
-release: true
-dart-define:
-  BASE_URL: "__BASE_URL__"
-  PRODUCTS_PATH: "__PRODUCTS_PATH__"
-  ORDERS_PATH: "__ORDERS_PATH__"
-  SIGN_UP_BASE_URL: "__SIGN_UP_BASE_URL__"
-  WEB_API_KEY: "__WEB_API_KEY__"
