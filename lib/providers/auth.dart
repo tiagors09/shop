@@ -6,7 +6,7 @@ import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
-  final _url = '${Environment.signUpBaseUrl}/${Environment.webApiKey}';
+  final _url = Environment.signUpBaseUrl + Environment.webApiKey;
 
   Future<void> signup(String email, String password) async {
     try {
@@ -17,7 +17,7 @@ class Auth with ChangeNotifier {
         },
         body: jsonEncode(
           {
-            'emai': email,
+            'email': email,
             'password': password,
             'returnSecureToken': true,
           },
