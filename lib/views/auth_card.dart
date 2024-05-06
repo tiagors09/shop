@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 
 enum AuthMode { signUp, login }
 
@@ -12,8 +10,9 @@ class AuthCard extends StatefulWidget {
 }
 
 class _AuthCardState extends State<AuthCard> {
-  final _authMode = AuthMode.login;
-
+  GlobalKey<FormState> _form = GlobalKey();
+  bool _isLoading = false;
+  var _authMode = AuthMode.login;
   final _passwordController = TextEditingController();
 
   final Map<String, String> _authData = {
@@ -21,7 +20,37 @@ class _AuthCardState extends State<AuthCard> {
     'password': '',
   };
 
-  void _submit() {}
+  void _submit() {
+    if (!_form.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    _form.currentState!.save();
+
+    if (_authMode == AuthMode.login) {
+      // TODO: lógica de login
+    } else {
+      // TODO: lógica de registrar
+    }
+
+    setState(() {});
+  }
+
+  void _switchAuthMode() {
+    if (_authMode == AuthMode.login) {
+      setState(() {
+        _authMode = AuthMode.signUp;
+      });
+    } else {
+      setState(() {
+        _authMode = AuthMode.login;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +62,11 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Container(
-        height: 320,
+        height: _authMode == AuthMode.login ? 390 : 371,
         width: deviceSize.width * 0.75,
         padding: const EdgeInsets.all(16),
         child: Form(
+          key: _form,
           child: Column(
             children: [
               TextFormField(
@@ -74,7 +104,8 @@ class _AuthCardState extends State<AuthCard> {
                   keyboardType: TextInputType.text,
                   validator: _authMode == AuthMode.signUp
                       ? (value) {
-                          if (value != _passwordController.text) {
+                          if (value!.trim().isEmpty ||
+                              value != _passwordController.text) {
                             return 'Senhas são diferentes';
                           }
 
@@ -85,24 +116,35 @@ class _AuthCardState extends State<AuthCard> {
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 20),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    backgroundColor: Colors.purple,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 8,
-                    ),
-                  ),
-                  onPressed: () {},
+                margin: const EdgeInsets.only(top: 20, bottom: 8),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          backgroundColor: Colors.purple,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 8,
+                          ),
+                        ),
+                        onPressed: _submit,
+                        child: Text(
+                          _authMode == AuthMode.login ? 'ENTRAR' : 'REGISTRAR',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+              ),
+              Visibility(
+                visible: !_isLoading,
+                child: TextButton(
+                  onPressed: _switchAuthMode,
                   child: Text(
-                    _authMode == AuthMode.login ? 'ENTRAR' : 'REGISTRAR',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
+                    'ALTERNAR P/ ${_authMode == AuthMode.login ? 'REGISTRAR' : 'LOGIN'}',
                   ),
                 ),
               )
