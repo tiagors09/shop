@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/providers/auth.dart';
+import 'package:shop/utils/environment.dart';
 
 enum AuthMode { signUp, login }
 
@@ -20,10 +23,12 @@ class _AuthCardState extends State<AuthCard> {
     'password': '',
   };
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_form.currentState!.validate()) {
       return;
     }
+
+    print(_authData['email'].toString());
 
     setState(() {
       _isLoading = true;
@@ -31,13 +36,27 @@ class _AuthCardState extends State<AuthCard> {
 
     _form.currentState!.save();
 
-    if (_authMode == AuthMode.login) {
-      // TODO: lógica de login
-    } else {
-      // TODO: lógica de registrar
+    final auth = Provider.of<Auth>(context, listen: false);
+
+    try {
+      if (_authMode == AuthMode.login) {
+        // TODO: lógica de login
+      } else {
+        await auth.signup(
+          _authData['email'].toString(),
+          _authData['password'].toString(),
+        );
+      }
+    } catch (e) {
+      Environment.showErrorMessage(
+        context,
+        e.toString(),
+      );
     }
 
-    setState(() {});
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _switchAuthMode() {
@@ -87,7 +106,7 @@ class _AuthCardState extends State<AuthCard> {
                 obscureText: true,
                 keyboardType: TextInputType.text,
                 validator: (value) {
-                  if (value!.isEmpty || value.length > 8) {
+                  if (value!.isEmpty || value.length < 8) {
                     return 'Informe uma senha válida';
                   }
 
