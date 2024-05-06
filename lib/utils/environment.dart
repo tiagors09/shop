@@ -4,6 +4,8 @@ abstract class Environment {
   static const baseUrl = String.fromEnvironment('BASE_URL');
   static const productsPath = String.fromEnvironment('PRODUCTS_PATH');
   static const ordersPath = String.fromEnvironment('ORDERS_PATH');
+  static const signUpBaseUrl = String.fromEnvironment('SIGN_UP_BASE_URL');
+  static const webApiKey = String.fromEnvironment('WEB_API_KEY');
 
   static const String purchaseError =
       "Oh não! Parece que encontramos um probleminha durante a transação de compra. 🛒";
