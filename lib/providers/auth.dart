@@ -6,12 +6,16 @@ import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
-  final _url = Environment.signUpBaseUrl + Environment.webApiKey;
+  Future<void> _authenticate(
+    String email,
+    String password,
+    String urlSegment,
+  ) async {
+    final url = Environment.authBaseUrl + urlSegment + Environment.webApiKey;
 
-  Future<void> signup(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse(_url),
+        Uri.parse(url),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },
@@ -26,7 +30,16 @@ class Auth with ChangeNotifier {
 
       print(jsonDecode(response.body));
     } catch (e) {
+      print(e);
       throw const HttpException('');
     }
+  }
+
+  Future<void> signup(String email, String password) async {
+    return _authenticate(email, password, Environment.signUpUrlSegment);
+  }
+
+  Future<void> signIn(String email, String password) async {
+    return _authenticate(email, password, Environment.signInUrlSegment);
   }
 }

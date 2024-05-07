@@ -4,7 +4,9 @@ abstract class Environment {
   static const baseUrl = String.fromEnvironment('BASE_URL');
   static const productsPath = String.fromEnvironment('PRODUCTS_PATH');
   static const ordersPath = String.fromEnvironment('ORDERS_PATH');
-  static const signUpBaseUrl = String.fromEnvironment('SIGN_UP_BASE_URL');
+  static const authBaseUrl = String.fromEnvironment('AUTH_BASE_URL');
+  static const signUpUrlSegment = String.fromEnvironment('SIGN_UP_URL_SEGMENT');
+  static const signInUrlSegment = String.fromEnvironment('SIGN_IN_URL_SEGMENT');
   static const webApiKey = String.fromEnvironment('WEB_API_KEY');
 
   static const String purchaseError =
