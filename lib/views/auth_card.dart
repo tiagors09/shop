@@ -23,12 +23,10 @@ class _AuthCardState extends State<AuthCard> {
     'password': '',
   };
 
-  Future<void> _submit() async {
+  void _submit() {
     if (!_form.currentState!.validate()) {
       return;
     }
-
-    print(_authData['email'].toString());
 
     setState(() {
       _isLoading = true;
@@ -38,21 +36,27 @@ class _AuthCardState extends State<AuthCard> {
 
     final auth = Provider.of<Auth>(context, listen: false);
 
-    try {
-      if (_authMode == AuthMode.login) {
-        // TODO: lógica de login
-      } else {
-        await auth.signup(
-          _authData['email'].toString(),
-          _authData['password'].toString(),
-        );
-      }
-    } catch (e) {
+    Future<void> Function(String, String) authFn;
+
+    if (_authMode == AuthMode.login) {
+      authFn = auth.signup;
+    } else {
+      authFn = auth.signIn;
+    }
+
+    authFn(
+      _authData['email'].toString(),
+      _authData['password'].toString(),
+    )
+        .then(
+      (_) => null,
+    )
+        .catchError((e) {
       Environment.showErrorMessage(
         context,
         e.toString(),
       );
-    }
+    });
 
     setState(() {
       _isLoading = false;
