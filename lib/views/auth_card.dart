@@ -39,9 +39,9 @@ class _AuthCardState extends State<AuthCard> {
     Future<void> Function(String, String) authFn;
 
     if (_authMode == AuthMode.login) {
-      authFn = auth.signup;
-    } else {
       authFn = auth.signIn;
+    } else {
+      authFn = auth.signup;
     }
 
     authFn(
