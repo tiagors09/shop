@@ -27,7 +27,7 @@ jobs:
         run: flutter pub get
     
       - name: Build release project
-        run: flutter build web --base-href=/shop/ --dart-define=BASE_URL=https://flutter-cod3r-4c85d-default-rtdb.firebaseio.com/ --dart-define=PRODUCTS_PATH=products --dart-define=ORDERS_PATH=orders -dart-define=SIGN_UP_BASE_URL=https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAF2XRkCI-t83ZXdyX_yfdveFQLHnRMrMM --dart-define=WEB_API_KEY=AIzaSyAF2XRkCI-t83ZXdyX_yfdveFQLHnRMrMM
+        run: flutter build web --base-href=/shop/ --dart-define=BASE_URL=${{ secrets.BASE_URL }} --dart-define=PRODUCTS_PATH=${{ secrets.PRODUCTS_PATH }} --dart-define=ORDERS_PATH=${{ secrets.ORDERS_PATH }} -dart-define=SIGN_UP_BASE_URL=${{ secrets.SIGN_UP_BASE_URL }} --dart-define=WEB_API_KEY=${{ secrets.WEB_API_KEY }}
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v2
