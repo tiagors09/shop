@@ -1,11 +1,26 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shop/exceptions/firebase_exception.dart';
+import 'package:shop/exceptions/auth_exception.dart';
 import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
+  String? _token;
+  DateTime? _expiryDate;
+
+  bool get isAuth => token != null;
+
+  String? get token {
+    if (_token != null &&
+        _expiryDate != null &&
+        _expiryDate!.isAfter(DateTime.now())) {
+      return _token!;
+    }
+
+    return null;
+  }
+
   Future<void> _authenticate(
     String email,
     String password,
@@ -31,6 +46,14 @@ class Auth with ChangeNotifier {
 
     if (responseBody['error'] != null) {
       throw AuthException(responseBody['error']['message']);
+    } else {
+      _token = responseBody['idToken'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseBody['expiresIn']),
+        ),
+      );
+      notifyListeners();
     }
   }
 
