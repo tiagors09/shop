@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shop/exceptions/http_exception.dart';
+import 'package:shop/exceptions/firebase_exception.dart';
 import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,25 +13,24 @@ class Auth with ChangeNotifier {
   ) async {
     final url = Environment.authBaseUrl + urlSegment + Environment.webApiKey;
 
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        {
+          'email': email,
+          'password': password,
+          'returnSecureToken': true,
         },
-        body: jsonEncode(
-          {
-            'email': email,
-            'password': password,
-            'returnSecureToken': true,
-          },
-        ),
-      );
+      ),
+    );
 
-      print(jsonDecode(response.body));
-    } catch (e) {
-      print(e);
-      throw const HttpException('');
+    final responseBody = jsonDecode(response.body);
+
+    if (responseBody['error'] != null) {
+      throw AuthException(responseBody['error']['message']);
     }
   }
 
