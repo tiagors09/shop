@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:shop/views/auth_card.dart';
+import 'package:shop/widgets/auth_card.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
