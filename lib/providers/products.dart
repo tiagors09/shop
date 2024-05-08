@@ -8,27 +8,14 @@ import 'product.dart';
 class Products with ChangeNotifier {
   final _url = Environment.baseUrl + Environment.productsPath;
 
-  bool _showFavoriteOnly = false;
   final String? _token;
   final List<Product> _items;
 
   Products(this._token, this._items);
 
-  List<Product> get items => _showFavoriteOnly
-      ? _items.where((prod) => prod.isFavorite).toList()
-      : [..._items];
+  List<Product> get items => [..._items];
 
   int get itemsCount => _items.length;
-
-  void showFavoriteOnly() {
-    _showFavoriteOnly = true;
-    notifyListeners();
-  }
-
-  void showAll() {
-    _showFavoriteOnly = false;
-    notifyListeners();
-  }
 
   Future<void> loadProducts() async {
     try {
