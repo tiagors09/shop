@@ -6,10 +6,13 @@ import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
+  late String _userID;
   String? _token;
   DateTime? _expiryDate;
 
   bool get isAuth => token != null;
+
+  String? get userId => isAuth ? _userID : null;
 
   String? get token {
     if (_token != null &&
@@ -48,9 +51,12 @@ class Auth with ChangeNotifier {
       throw AuthException(responseBody['error']['message']);
     } else {
       _token = responseBody['idToken'];
+      _userID = responseBody['localId'];
       _expiryDate = DateTime.now().add(
         Duration(
-          seconds: int.parse(responseBody['expiresIn']),
+          seconds: int.parse(
+            responseBody['expiresIn'],
+          ),
         ),
       );
       notifyListeners();
