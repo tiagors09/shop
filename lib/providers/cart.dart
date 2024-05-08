@@ -36,7 +36,7 @@ class CartItem {
       id: res['id'],
       productId: res['productId'],
       title: res['title'],
-      price: res['price'],
+      price: double.parse(res['price'].toString()),
       quantity: res['quantity'],
     );
   }
