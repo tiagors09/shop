@@ -6,11 +6,13 @@ import '../utils/environment.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-  final _items = <Product>[];
+  final _url = Environment.baseUrl + Environment.productsPath;
 
   bool _showFavoriteOnly = false;
+  final String? _token;
+  final List<Product> _items;
 
-  final _url = Environment.baseUrl + Environment.productsPath;
+  Products(this._token, this._items);
 
   List<Product> get items => _showFavoriteOnly
       ? _items.where((prod) => prod.isFavorite).toList()
@@ -31,7 +33,7 @@ class Products with ChangeNotifier {
   Future<void> loadProducts() async {
     try {
       final response = await http.get(
-        Uri.parse('$_url.json'),
+        Uri.parse('$_url.json?auth=$_token'),
       );
 
       Map<String, dynamic> data = jsonDecode(response.body) ?? {};
@@ -51,7 +53,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       final response = await http.post(
-        Uri.parse('$_url.json'),
+        Uri.parse('$_url.json?auth=$_token'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -80,7 +82,7 @@ class Products with ChangeNotifier {
       if (index >= 0) {
         await http.patch(
           Uri.parse(
-            '$_url/${product.id}.json',
+            '$_url/${product.id}.json?auth=$_token',
           ),
           body: product.toJSON(),
         );
@@ -101,7 +103,7 @@ class Products with ChangeNotifier {
 
         await http.delete(
           Uri.parse(
-            '$_url/${product.id}.json',
+            '$_url/${product.id}.json?auth=$_token',
           ),
         );
 
