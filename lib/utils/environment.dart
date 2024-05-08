@@ -4,6 +4,8 @@ abstract class Environment {
   static const baseUrl = String.fromEnvironment('BASE_URL');
   static const productsPath = String.fromEnvironment('PRODUCTS_PATH');
   static const ordersPath = String.fromEnvironment('ORDERS_PATH');
+  static const favoriteProductsPath =
+      String.fromEnvironment('FAVORITE_PRODUCTS_PATH');
   static const authBaseUrl = String.fromEnvironment('AUTH_BASE_URL');
   static const signUpUrlSegment = String.fromEnvironment('SIGN_UP_URL_SEGMENT');
   static const signInUrlSegment = String.fromEnvironment('SIGN_IN_URL_SEGMENT');
