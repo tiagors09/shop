@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/providers/favorite_products.dart';
 import 'package:shop/utils/app_routes.dart';
-import 'package:shop/utils/environment.dart';
 
 import '../providers/cart.dart';
 import '../providers/product.dart';
+import '../providers/products.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({
@@ -16,8 +15,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-    final favoriteProducts =
-        Provider.of<FavoriteProducts>(context, listen: false);
+    final products = Provider.of<Products>(context, listen: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -63,21 +61,9 @@ class ProductItem extends StatelessWidget {
                   product.toogleFavorite();
 
                   if (product.isFavorite) {
-                    favoriteProducts.addFavoriteProduct(product).catchError(
-                          (e) => Environment.showErrorMessage(
-                            context,
-                            e.toString(),
-                          ),
-                        );
+                    products.addFavoriteProduct(product);
                   } else {
-                    favoriteProducts
-                        .removeFavoriteProduct(product.id!)
-                        .catchError(
-                          (e) => Environment.showErrorMessage(
-                            context,
-                            e.toString(),
-                          ),
-                        );
+                    products.removeFavoriteProduct(product.id!);
                   }
                 },
                 icon: Icon(
