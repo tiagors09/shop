@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 class Product with ChangeNotifier {
@@ -24,14 +22,13 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  String toJSON() {
-    return jsonEncode({
+  Map<String, dynamic> toJSON() {
+    return {
       'title': title,
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
-      'isFavorite': isFavorite,
-    });
+    };
   }
 
   static Product fromJson(Map<String, dynamic> res) {
@@ -41,7 +38,6 @@ class Product with ChangeNotifier {
       description: res['description'],
       price: res['price'],
       imageUrl: res['imageUrl'],
-      isFavorite: res['isFavorite'],
     );
   }
 }
