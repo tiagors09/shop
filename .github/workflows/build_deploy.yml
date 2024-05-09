@@ -27,7 +27,7 @@ jobs:
         run: flutter pub get
     
       - name: Build release project
-        run: flutter build web --base-href=/shop/ --dart-define=BASE_URL=${{ secrets.BASE_URL }} --dart-define=PRODUCTS_PATH=${{ secrets.PRODUCTS_PATH }} --dart-define=ORDERS_PATH=${{ secrets.ORDERS_PATH }} --dart-define=AUTH_BASE_URL=${{ secrets.AUTH_BASE_URL }} --dart-define=SIGN_UP_URL_SEGMENT=${{ secrets.SIGN_UP_URL_SEGMENT }} --dart-define=SIGN_IN_URL_SEGMENT=${{ secrets.SIGN_IN_URL_SEGMENT }} --dart-define=WEB_API_KEY=${{ secrets.WEB_API_KEY }}
+        run: flutter build web --base-href=/shop/ --dart-define=BASE_URL=${{ secrets.BASE_URL }} --dart-define=PRODUCTS_PATH=${{ secrets.PRODUCTS_PATH }} --dart-define=ORDERS_PATH=${{ secrets.ORDERS_PATH }} --dart-define=AUTH_BASE_URL=${{ secrets.AUTH_BASE_URL }} --dart-define=SIGN_UP_URL_SEGMENT=${{ secrets.SIGN_UP_URL_SEGMENT }} --dart-define=SIGN_IN_URL_SEGMENT=${{ secrets.SIGN_IN_URL_SEGMENT }} --dart-define=WEB_API_KEY=${{ secrets.WEB_API_KEY }} --dart-define=FAVORITE_PRODUCTS_PATH=${{ secrets.FAVORITE_PRODUCTS_PATH }}
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v2
