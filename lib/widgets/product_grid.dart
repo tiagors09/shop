@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
-import '../providers/products.dart';
 import 'product_grid_item.dart';
 
 class ProductGrid extends StatelessWidget {
+  final List<Product> products;
+
   const ProductGrid({
     super.key,
+    required this.products,
   });
 
   @override
   Widget build(BuildContext context) {
-    final productsProvider = Provider.of<Products>(context);
-    final List<Product> loadedProducts = productsProvider.items;
-
-    return loadedProducts.isNotEmpty
+    return products.isNotEmpty
         ? GridView.builder(
-            itemCount: loadedProducts.length,
+            itemCount: products.length,
             padding: const EdgeInsets.all(10),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -26,7 +25,7 @@ class ProductGrid extends StatelessWidget {
               mainAxisSpacing: 10,
             ),
             itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
-              value: loadedProducts[i],
+              value: products[i],
               child: const ProductItem(),
             ),
           )

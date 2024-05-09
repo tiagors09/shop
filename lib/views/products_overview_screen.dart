@@ -22,6 +22,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isLoading = true;
+  var _onlyFavorites = false;
 
   @override
   void initState() {
@@ -30,29 +31,24 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   }
 
   Future<void> _onRefresh() {
-    return Provider.of<Products>(
+    final products = Provider.of<Products>(
       context,
       listen: false,
+    );
+
+    return Future.wait(
+      [
+        products.loadProducts(),
+        products.loadFavoriteProducts(),
+      ],
     )
-        .loadProducts()
-        .then(
-          (_) => setState(
-            () {
-              _isLoading = false;
-            },
-          ),
-        )
+        .then((value) => setState(
+              () => _isLoading = false,
+            ))
         .catchError(
       (e) {
-        Environment.showErrorMessage(
-          context,
-          e,
-        );
-        setState(
-          () {
-            _isLoading = false;
-          },
-        );
+        Environment.showErrorMessage(context, e.toString());
+        setState(() => _isLoading = false);
       },
     );
   }
@@ -79,10 +75,18 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
           ),
           PopupMenuButton(
-            onSelected: (FilterOptions selectedValue) =>
-                selectedValue == FilterOptions.favorite
-                    ? products.showFavoriteOnly()
-                    : products.showAll(),
+            initialValue: FilterOptions.all,
+            onSelected: (FilterOptions selectedValue) {
+              if (selectedValue == FilterOptions.favorite) {
+                setState(() {
+                  _onlyFavorites = true;
+                });
+              } else if (selectedValue == FilterOptions.all) {
+                setState(() {
+                  _onlyFavorites = false;
+                });
+              }
+            },
             icon: const Icon(Icons.more_vert),
             itemBuilder: (_) => [
               const PopupMenuItem(
@@ -103,7 +107,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             )
           : RefreshIndicator(
               onRefresh: _onRefresh,
-              child: const ProductGrid(),
+              child: !_onlyFavorites
+                  ? ProductGrid(
+                      products: products.items,
+                    )
+                  : ProductGrid(
+                      products: products.items
+                          .where((prod) => prod.isFavorite)
+                          .toList(),
+                    ),
             ),
     );
   }

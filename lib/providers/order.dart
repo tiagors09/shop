@@ -23,7 +23,7 @@ class Order {
   static Order fromJson(Map<String, dynamic> res) {
     return Order(
       id: res['id'],
-      total: res['total'],
+      total: double.parse(res['total'].toString()),
       products: (res['products'] as List<dynamic>)
           .map(
             (item) => CartItem.fromJson(item),
@@ -43,24 +43,30 @@ class Orders with ChangeNotifier {
 
   int get itemsCount => _items.length;
 
+  String? _token;
+
+  Orders(this._token, this._items);
+
   Future<void> addOrder(Cart cart) async {
     try {
       final date = DateTime.now();
       final response = await http.post(
-        Uri.parse('$_url.json'),
-        body: jsonEncode({
-          'total': cart.totalAmount,
-          'date': date.toIso8601String(),
-          'products': cart.items.values
-              .map((cartItem) => {
-                    'id': cartItem.id,
-                    'productId': cartItem.productId,
-                    'title': cartItem.title,
-                    'quantity': cartItem.quantity,
-                    'price': cartItem.price,
-                  })
-              .toList()
-        }),
+        Uri.parse('$_url.json?auth=$_token'),
+        body: jsonEncode(
+          {
+            'total': cart.totalAmount,
+            'date': date.toIso8601String(),
+            'products': cart.items.values
+                .map((cartItem) => {
+                      'id': cartItem.id,
+                      'productId': cartItem.productId,
+                      'title': cartItem.title,
+                      'quantity': cartItem.quantity,
+                      'price': cartItem.price,
+                    })
+                .toList()
+          },
+        ),
       );
       _items.insert(
         0,
@@ -81,7 +87,7 @@ class Orders with ChangeNotifier {
     try {
       List<Order> loadedItems = [];
       final response = await http.get(
-        Uri.parse('$_url.json'),
+        Uri.parse('$_url.json?auth=$_token'),
       );
 
       Map<String, dynamic> data = jsonDecode(response.body) ?? {};
