@@ -23,25 +23,21 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isLoading = true;
   var _onlyFavorites = false;
+  late Products products;
 
   @override
   void initState() {
     super.initState();
+    products = Provider.of<Products>(
+      context,
+      listen: false,
+    );
     _onRefresh();
   }
 
   Future<void> _onRefresh() {
-    final products = Provider.of<Products>(
-      context,
-      listen: false,
-    );
-
-    return Future.wait(
-      [
-        products.loadProducts(),
-        products.loadFavoriteProducts(),
-      ],
-    )
+    return products
+        .loadProducts()
         .then((value) => setState(
               () => _isLoading = false,
             ))
