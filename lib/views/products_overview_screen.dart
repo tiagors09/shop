@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/providers/favorite_products.dart';
-import 'package:shop/providers/product.dart';
 import 'package:shop/utils/app_routes.dart';
 import 'package:shop/utils/environment.dart';
 import 'package:shop/widgets/app_drawer.dart';
@@ -23,8 +21,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  List<Product> loadedProducts = [];
-
   var _isLoading = true;
   var _onlyFavorites = false;
 
@@ -35,29 +31,31 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   }
 
   Future<void> _onRefresh() {
+    final products = Provider.of<Products>(
+      context,
+      listen: false,
+    );
+
     return Future.wait(
       [
-        Provider.of<Products>(
-          context,
-          listen: false,
-        ).loadProducts(),
-        Provider.of<FavoriteProducts>(
-          context,
-          listen: false,
-        ).loadFavoriteProducts(),
+        products.loadProducts(),
+        products.loadFavoriteProducts(),
       ],
-    ).catchError((e) {
-      Environment.showErrorMessage(context, e.toString());
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    )
+        .then((value) => setState(
+              () => _isLoading = false,
+            ))
+        .catchError(
+      (e) {
+        Environment.showErrorMessage(context, e.toString());
+        setState(() => _isLoading = false);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final Products products = Provider.of(context);
-    final FavoriteProducts favoriteProducts = Provider.of(context);
 
     return Scaffold(
       drawer: const AppDrawer(),
@@ -114,7 +112,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                       products: products.items,
                     )
                   : ProductGrid(
-                      products: favoriteProducts.items,
+                      products: products.items
+                          .where((prod) => prod.isFavorite)
+                          .toList(),
                     ),
             ),
     );
