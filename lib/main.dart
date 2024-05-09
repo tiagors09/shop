@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/auth.dart';
 import 'package:shop/providers/cart.dart';
-import 'package:shop/providers/favorite_products.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/utils/app_routes.dart';
 import 'package:shop/views/auth_or_home_screen.dart';
@@ -31,10 +30,12 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProxyProvider<Auth, Products>(
         create: (BuildContext context) => Products(
           null,
+          null,
           [],
         ),
         update: (ctx, auth, previousProducts) => Products(
           auth.token,
+          auth.userId,
           previousProducts!.items,
         ),
       ),
@@ -46,18 +47,6 @@ class MyApp extends StatelessWidget {
         update: (context, auth, previousOrders) => Orders(
           auth.token,
           previousOrders!.items,
-        ),
-      ),
-      ChangeNotifierProxyProvider<Auth, FavoriteProducts>(
-        create: (_) => FavoriteProducts(
-          null,
-          null,
-          [],
-        ),
-        update: (context, auth, previousFavoriteProducts) => FavoriteProducts(
-          auth.token,
-          auth.userId,
-          previousFavoriteProducts!.items,
         ),
       ),
       ChangeNotifierProvider(
