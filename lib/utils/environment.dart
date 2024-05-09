@@ -15,7 +15,6 @@ abstract class Environment {
       "Oh não! Parece que encontramos um probleminha durante a transação de compra. 🛒";
   static const String allTransactionsError =
       "Ops! Parece que algo deu errado ao recuperar todas as transações. 🐾";
-
   static const String updateError =
       "Oops! Parece que encontramos um probleminha ao atualizar o produto. 🙈";
   static const String insertError =
@@ -24,11 +23,13 @@ abstract class Environment {
       "Oh, não! Encontramos um probleminha ao excluir o produto. 🐶";
   static const String readError =
       "Eita! Algo deu errado ao ler o produto. Será que ele se escondeu? 🙊";
-
   static const String allProductsError =
       "Ops! Algo deu errado ao processar todos os produtos. 🐱";
-
   static const String dialogTitle = "Opsie! Probleminha";
+  static const String favoritesError =
+      "Ops! Algo deu errado ao recuperar os favoritos. 🌟";
+  static const String removeFromFavoritesError =
+      "Oh, não! Encontramos um problema ao excluir o produto dos favoritos. 💔";
 
   static Future<Null> showErrorMessage(
     BuildContext context,
