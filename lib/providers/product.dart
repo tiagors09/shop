@@ -8,6 +8,11 @@ class Product with ChangeNotifier {
   final String imageUrl;
   bool isFavorite;
 
+  set setFavorite(bool value) {
+    isFavorite = value;
+    notifyListeners();
+  }
+
   Product({
     this.id,
     required this.title,

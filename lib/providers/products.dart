@@ -12,7 +12,7 @@ class Products with ChangeNotifier {
   final String? _userId;
   final List<Product> _items;
 
-  final List<dynamic> _favoriteItems = [];
+  var _favoriteItems = <dynamic>[];
 
   bool _showFavoriteOnly = false;
 
@@ -36,19 +36,72 @@ class Products with ChangeNotifier {
 
   Future<void> loadProducts() async {
     try {
-      final response = await http.get(
-        Uri.parse('$_url.json?auth=$_token'),
+      final response = await Future.wait(
+        [
+          http.get(
+            Uri.parse('$_url.json?auth=$_token'),
+          ),
+          http.get(
+            Uri.parse(
+              '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId.json?auth=$_token',
+            ),
+          ),
+        ],
       );
 
-      Map<String, dynamic> data = jsonDecode(response.body) ?? {};
+      Map<String, dynamic> data = jsonDecode(response[0].body) ?? {};
 
       _items.clear();
-      if (data.isNotEmpty || response.statusCode == HttpStatus.ok) {
-        data.forEach((productId, productData) {
-          _items.add(Product.fromJson({...productData, 'id': productId}));
-        });
+      if (data.isNotEmpty || response[0].statusCode == HttpStatus.ok) {
+        data.forEach(
+          (productId, productData) {
+            _items.add(
+              Product.fromJson(
+                {...productData, 'id': productId},
+              ),
+            );
+          },
+        );
         notifyListeners();
+
+        data = jsonDecode(response[1].body) ?? {};
+
+        if (data.isNotEmpty || response[1].statusCode == HttpStatus.ok) {
+          data.forEach(
+            (id, favProd) {
+              _favoriteItems.add(
+                {
+                  'id': id,
+                  ...favProd,
+                },
+              );
+            },
+          );
+        }
+
+        for (var favProd in _favoriteItems) {
+          final favProdId = favProd['productId'];
+          final prodId = _items.indexWhere(
+            (prod) => prod.id == favProdId.toString(),
+          );
+
+          if (prodId >= 0) {
+            final product = _items[prodId];
+            product.setFavorite = bool.parse(favProd['isFavorite'].toString());
+          }
+        }
       }
+
+      _items.forEach(
+        (element) {
+          print(
+            {
+              ...element.toJSON(),
+              'isFavorite': element.isFavorite,
+            }.toString(),
+          );
+        },
+      );
     } catch (_) {
       throw const HttpException(Environment.allProductsError);
     }
@@ -79,39 +132,6 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> loadFavoriteProducts() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$_url/$_userId.json?auth=$_token'),
-      );
-
-      Map<String, dynamic> data = jsonDecode(response.body) ?? {};
-
-      _favoriteItems.clear();
-      if (data.isNotEmpty || response.statusCode == HttpStatus.ok) {
-        data.forEach(
-          (id, productData) {
-            _favoriteItems.add(
-              {
-                ...productData,
-                id: id,
-              },
-            );
-            for (var product in _items) {
-              if (product.id == productData['productId']) {
-                product.isFavorite = productData['isFavorite'];
-              }
-            }
-
-            notifyListeners();
-          },
-        );
-      }
-    } catch (_) {
-      throw const HttpException('Erro ao pegar os produtos favoritados');
-    }
-  }
-
   Future<void> addFavoriteProduct(Product product) async {
     try {
       final productBody = {
@@ -135,6 +155,13 @@ class Products with ChangeNotifier {
           'id': jsonDecode(response.body)['name'],
         },
       );
+      for (Product product in _items) {
+        if (product.id == productBody['productId']) {
+          product.setFavorite = bool.parse(
+            productBody['isFavorite'].toString(),
+          );
+        }
+      }
 
       notifyListeners();
     } catch (_) {
@@ -143,31 +170,27 @@ class Products with ChangeNotifier {
   }
 
   Future<void> removeFavoriteProduct(String id) async {
-    try {
-      final indexFavoriteProduct = _favoriteItems.indexWhere(
-        (prod) => prod['productId'] == id,
+    final indexFavoriteProduct = _favoriteItems.indexWhere(
+      (prod) => prod['productId'] == id,
+    );
+
+    final productIndex = _items.indexWhere(
+      (prod) => prod.id == id,
+    );
+
+    if (indexFavoriteProduct >= 0) {
+      final favoriteProduct = _favoriteItems[indexFavoriteProduct];
+
+      _items[productIndex].setFavorite = false;
+      _favoriteItems.removeAt(indexFavoriteProduct);
+
+      await http.delete(
+        Uri.parse(
+          '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId/${favoriteProduct['id']}.json?auth=$_token',
+        ),
       );
 
-      final productIndex = _items.indexWhere(
-        (prod) => prod.id == id,
-      );
-
-      if (indexFavoriteProduct >= 0) {
-        final favoriteProduct = _favoriteItems[indexFavoriteProduct];
-
-        _items[productIndex].isFavorite = false;
-        _favoriteItems.removeAt(indexFavoriteProduct);
-
-        await http.delete(
-          Uri.parse(
-            '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId/${favoriteProduct['id']}.json?auth=$_token',
-          ),
-        );
-
-        notifyListeners();
-      }
-    } catch (_) {
-      throw const HttpException(Environment.removeFromFavoritesError);
+      notifyListeners();
     }
   }
 

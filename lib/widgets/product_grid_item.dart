@@ -63,6 +63,7 @@ class ProductItem extends StatelessWidget {
                   if (product.isFavorite) {
                     products.addFavoriteProduct(product);
                   } else {
+                    print('entrou');
                     products.removeFavoriteProduct(product.id!);
                   }
                 },
