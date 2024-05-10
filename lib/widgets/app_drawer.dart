@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/utils/app_routes.dart';
+
+import '../providers/auth.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -8,14 +11,14 @@ class AppDrawer extends StatelessWidget {
     BuildContext context,
     String title,
     IconData icon,
-    AppRoutes route,
+    Function()? onTap,
   ) {
     return [
       const Divider(),
       ListTile(
         title: Text(title),
         leading: Icon(icon),
-        onTap: () => Navigator.of(context).pushReplacementNamed(route.name),
+        onTap: onTap,
       )
     ];
   }
@@ -26,27 +29,41 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: const Text('Bem vindo Usuário'),
+            title: const Text(
+              'Bem vindo Usuário',
+            ),
             automaticallyImplyLeading: false,
           ),
           ...drawnerItemm(
             context,
             "Loja",
             Icons.shop,
-            AppRoutes.productsOverviewScreen,
+            () => Navigator.of(context).pushReplacementNamed(
+              AppRoutes.productsOverviewScreen.name,
+            ),
           ),
           ...drawnerItemm(
             context,
             "Pedidos",
             Icons.payment,
-            AppRoutes.orders,
+            () => Navigator.of(context).pushReplacementNamed(
+              AppRoutes.orders.name,
+            ),
           ),
           ...drawnerItemm(
             context,
             'Gerenciar Produtos',
             Icons.edit,
-            AppRoutes.products,
-          )
+            () => Navigator.of(context).pushReplacementNamed(
+              AppRoutes.products.name,
+            ),
+          ),
+          ...drawnerItemm(
+            context,
+            'Sair',
+            Icons.exit_to_app,
+            () => Provider.of<Auth>(context, listen: false).logout(),
+          ),
         ],
       ),
     );
