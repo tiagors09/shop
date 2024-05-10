@@ -44,14 +44,17 @@ class Orders with ChangeNotifier {
   int get itemsCount => _items.length;
 
   String? _token;
+  String? _userId;
 
-  Orders(this._token, this._items);
+  Orders(this._token, this._userId, this._items);
 
   Future<void> addOrder(Cart cart) async {
     try {
       final date = DateTime.now();
       final response = await http.post(
-        Uri.parse('$_url.json?auth=$_token'),
+        Uri.parse(
+          '$_url/$_userId.json?auth=$_token',
+        ),
         body: jsonEncode(
           {
             'total': cart.totalAmount,
@@ -87,7 +90,9 @@ class Orders with ChangeNotifier {
     try {
       List<Order> loadedItems = [];
       final response = await http.get(
-        Uri.parse('$_url.json?auth=$_token'),
+        Uri.parse(
+          '$_url/$_userId.json?auth=$_token',
+        ),
       );
 
       Map<String, dynamic> data = jsonDecode(response.body) ?? {};
