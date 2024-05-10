@@ -91,17 +91,6 @@ class Products with ChangeNotifier {
           }
         }
       }
-
-      _items.forEach(
-        (element) {
-          print(
-            {
-              ...element.toJSON(),
-              'isFavorite': element.isFavorite,
-            }.toString(),
-          );
-        },
-      );
     } catch (_) {
       throw const HttpException(Environment.allProductsError);
     }
