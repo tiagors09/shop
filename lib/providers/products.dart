@@ -71,7 +71,6 @@ class Products with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       throw const HttpException(Environment.allProductsError);
     }
   }

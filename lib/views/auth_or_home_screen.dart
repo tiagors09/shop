@@ -11,6 +11,18 @@ class AuthOrHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<Auth>(context);
 
-    return auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen();
+    return FutureBuilder(
+      future: auth.tryAutoLogin(),
+      builder: (ctx, snapshot) =>
+          snapshot.connectionState == ConnectionState.waiting
+              ? const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : auth.isAuth
+                  ? const ProductsOverviewScreen()
+                  : const AuthScreen(),
+    );
   }
 }

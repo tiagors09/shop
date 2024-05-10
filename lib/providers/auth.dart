@@ -6,6 +6,8 @@ import 'package:shop/exceptions/auth_exception.dart';
 import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
+import '../data/store.dart';
+
 class Auth with ChangeNotifier {
   late String? _userID;
   String? _token;
@@ -61,7 +63,18 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
+
+      Store.saveMap(
+        'userData',
+        {
+          'token': _token,
+          'userId': _userID,
+          'expiryDate': _expiryDate!.toIso8601String(),
+        },
+      );
+
       _autoLogout();
+
       notifyListeners();
     }
   }
@@ -74,6 +87,30 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, Environment.signInUrlSegment);
   }
 
+  Future<void> tryAutoLogin() async {
+    if (isAuth) {
+      return Future.value();
+    }
+
+    final userData = await Store.getMap('userData');
+
+    if (userData.isEmpty) {
+      return Future.value();
+    }
+
+    final expiryDate = DateTime.parse(userData['expiryDate']);
+
+    if (expiryDate.isBefore(DateTime.now())) {
+      return Future.value();
+    }
+
+    _userID = userData['userId'];
+    _token = userData['token'];
+    _expiryDate = expiryDate;
+
+    notifyListeners();
+  }
+
   void logout() {
     _token = null;
     _userID = null;
@@ -84,6 +121,7 @@ class Auth with ChangeNotifier {
       _logoutTimer = null;
     }
 
+    Store.remove('userData');
     notifyListeners();
   }
 
