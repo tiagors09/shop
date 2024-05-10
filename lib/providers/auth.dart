@@ -6,7 +6,7 @@ import 'package:shop/utils/environment.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
-  late String _userID;
+  late String? _userID;
   String? _token;
   DateTime? _expiryDate;
 
@@ -69,5 +69,12 @@ class Auth with ChangeNotifier {
 
   Future<void> signIn(String email, String password) async {
     return _authenticate(email, password, Environment.signInUrlSegment);
+  }
+
+  void logout() {
+    _token = null;
+    _userID = null;
+    _expiryDate = null;
+    notifyListeners();
   }
 }
