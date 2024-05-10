@@ -22,7 +22,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isLoading = true;
-  var _onlyFavorites = false;
   late Products products;
 
   @override
@@ -74,13 +73,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             initialValue: FilterOptions.all,
             onSelected: (FilterOptions selectedValue) {
               if (selectedValue == FilterOptions.favorite) {
-                setState(() {
-                  _onlyFavorites = true;
-                });
+                products.showFavoriteOnly();
               } else if (selectedValue == FilterOptions.all) {
-                setState(() {
-                  _onlyFavorites = false;
-                });
+                products.showAll();
               }
             },
             icon: const Icon(Icons.more_vert),
@@ -103,15 +98,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             )
           : RefreshIndicator(
               onRefresh: _onRefresh,
-              child: !_onlyFavorites
-                  ? ProductGrid(
-                      products: products.items,
-                    )
-                  : ProductGrid(
-                      products: products.items
-                          .where((prod) => prod.isFavorite)
-                          .toList(),
-                    ),
+              child: ProductGrid(
+                products: products.items,
+              ),
             ),
     );
   }
