@@ -12,8 +12,6 @@ class Products with ChangeNotifier {
   final String? _userId;
   final List<Product> _items;
 
-  var _favoriteItems = <dynamic>[];
-
   bool _showFavoriteOnly = false;
 
   Products(this._token, this._userId, this._items);
@@ -51,47 +49,29 @@ class Products with ChangeNotifier {
 
       Map<String, dynamic> data = jsonDecode(response[0].body) ?? {};
 
+      Map<String, dynamic> favData = jsonDecode(response[1].body) ?? {};
+
       _items.clear();
       if (data.isNotEmpty || response[0].statusCode == HttpStatus.ok) {
         data.forEach(
           (productId, productData) {
+            final isFavorite =
+                favData == {} ? false : favData[productId] ?? false;
             _items.add(
               Product.fromJson(
-                {...productData, 'id': productId},
+                {
+                  ...productData,
+                  'id': productId,
+                  'isFavorite': isFavorite,
+                },
               ),
             );
           },
         );
         notifyListeners();
-
-        data = jsonDecode(response[1].body) ?? {};
-
-        if (data.isNotEmpty || response[1].statusCode == HttpStatus.ok) {
-          data.forEach(
-            (id, favProd) {
-              _favoriteItems.add(
-                {
-                  'id': id,
-                  ...favProd,
-                },
-              );
-            },
-          );
-        }
-
-        for (var favProd in _favoriteItems) {
-          final favProdId = favProd['productId'];
-          final prodId = _items.indexWhere(
-            (prod) => prod.id == favProdId.toString(),
-          );
-
-          if (prodId >= 0) {
-            final product = _items[prodId];
-            product.setFavorite = bool.parse(favProd['isFavorite'].toString());
-          }
-        }
       }
-    } catch (_) {
+    } catch (e) {
+      print(e);
       throw const HttpException(Environment.allProductsError);
     }
   }
@@ -121,65 +101,22 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> addFavoriteProduct(Product product) async {
+  Future<void> toogleFavorite(Product product) async {
     try {
-      final productBody = {
-        'productId': product.id,
-        'isFavorite': product.isFavorite,
-      };
+      product.toogleFavorite();
 
-      final response = await http.post(
+      final response = await http.put(
         Uri.parse(
-          '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId.json?auth=$_token',
+          '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId/${product.id}.json?auth=$_token',
         ),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(productBody),
+        body: jsonEncode(product.isFavorite),
       );
 
-      _favoriteItems.add(
-        {
-          ...productBody,
-          'id': jsonDecode(response.body)['name'],
-        },
-      );
-      for (Product product in _items) {
-        if (product.id == productBody['productId']) {
-          product.setFavorite = bool.parse(
-            productBody['isFavorite'].toString(),
-          );
-        }
+      if (response.statusCode >= 400) {
+        product.toogleFavorite();
       }
-
-      notifyListeners();
     } catch (_) {
-      throw const HttpException(Environment.favoritesError);
-    }
-  }
-
-  Future<void> removeFavoriteProduct(String id) async {
-    final indexFavoriteProduct = _favoriteItems.indexWhere(
-      (prod) => prod['productId'] == id,
-    );
-
-    final productIndex = _items.indexWhere(
-      (prod) => prod.id == id,
-    );
-
-    if (indexFavoriteProduct >= 0) {
-      final favoriteProduct = _favoriteItems[indexFavoriteProduct];
-
-      _items[productIndex].setFavorite = false;
-      _favoriteItems.removeAt(indexFavoriteProduct);
-
-      await http.delete(
-        Uri.parse(
-          '${Environment.baseUrl + Environment.favoriteProductsPath}/$_userId/${favoriteProduct['id']}.json?auth=$_token',
-        ),
-      );
-
-      notifyListeners();
+      throw const HttpException(Environment.toogleFavoriteError);
     }
   }
 
