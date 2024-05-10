@@ -28,8 +28,8 @@ abstract class Environment {
   static const String dialogTitle = "Opsie! Probleminha";
   static const String favoritesError =
       "Ops! Algo deu errado ao recuperar os favoritos. 🌟";
-  static const String removeFromFavoritesError =
-      "Oh, não! Encontramos um problema ao excluir o produto dos favoritos. 💔";
+  static const String toogleFavoriteError =
+      "Oh, não! Encontramos um problema ao favoritar ou desfavoritar o produto dos favoritos. 💔";
 
   static Future<Null> showErrorMessage(
     BuildContext context,
