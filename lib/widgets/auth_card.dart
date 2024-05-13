@@ -197,8 +197,9 @@ class _AuthCardState extends State<AuthCard>
                               return null;
                             }
                           : null,
-                      onSaved: (value) =>
-                          _authData['password'] = value.toString(),
+                      onSaved: _authMode == AuthMode.signUp
+                          ? (value) => _authData['password'] = value.toString()
+                          : null,
                     ),
                   ),
                 ),
