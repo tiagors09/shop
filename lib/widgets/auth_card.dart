@@ -205,7 +205,7 @@ class _AuthCardState extends State<AuthCard>
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 55, bottom: 8),
+                margin: const EdgeInsets.only(top: 10, bottom: 3),
                 child: _isLoading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
