@@ -43,7 +43,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         end: Alignment(0, 0),
                         colors: [
                           Color.fromRGBO(0, 0, 0, 0.6),
-                          Color.fromRGBO(0, 0, 0, 0.6),
+                          Color.fromRGBO(0, 0, 0, 0),
                         ],
                       ),
                     ),
