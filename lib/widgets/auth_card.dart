@@ -136,12 +136,13 @@ class _AuthCardState extends State<AuthCard>
           milliseconds: 300,
         ),
         curve: Curves.linear,
-        height: _authMode == AuthMode.login ? 317 : 405,
+        height: _authMode == AuthMode.login ? 317 : 470,
         padding: const EdgeInsets.all(16),
         width: deviceSize.width * 0.75,
         child: Form(
           key: _form,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'E-mail'),
@@ -204,39 +205,45 @@ class _AuthCardState extends State<AuthCard>
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 3),
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+              Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 10, bottom: 3),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              backgroundColor: Colors.purple,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 8,
+                              ),
+                            ),
+                            onPressed: _submit,
+                            child: Text(
+                              _authMode == AuthMode.login
+                                  ? 'ENTRAR'
+                                  : 'REGISTRAR',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                          backgroundColor: Colors.purple,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 30,
-                            vertical: 8,
-                          ),
-                        ),
-                        onPressed: _submit,
-                        child: Text(
-                          _authMode == AuthMode.login ? 'ENTRAR' : 'REGISTRAR',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-              ),
-              Visibility(
-                visible: !_isLoading,
-                child: TextButton(
-                  onPressed: _switchAuthMode,
-                  child: Text(
-                    'ALTERNAR P/ ${_authMode == AuthMode.login ? 'REGISTRAR' : 'LOGIN'}',
                   ),
-                ),
-              )
+                  Visibility(
+                    visible: !_isLoading,
+                    child: TextButton(
+                      onPressed: _switchAuthMode,
+                      child: Text(
+                        'ALTERNAR P/ ${_authMode == AuthMode.login ? 'REGISTRAR' : 'LOGIN'}',
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ],
           ),
         ),
