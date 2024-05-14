@@ -136,7 +136,7 @@ class _AuthCardState extends State<AuthCard>
           milliseconds: 300,
         ),
         curve: Curves.linear,
-        height: _authMode == AuthMode.login ? 290 : 371,
+        height: _authMode == AuthMode.login ? 317 : 405,
         padding: const EdgeInsets.all(16),
         width: deviceSize.width * 0.75,
         child: Form(
