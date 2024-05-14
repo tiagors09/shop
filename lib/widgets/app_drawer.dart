@@ -36,7 +36,7 @@ class AppDrawer extends StatelessWidget {
           ),
           ...drawnerItemm(
             context,
-            "Loja",
+            'Loja',
             Icons.shop,
             () => Navigator.of(context).pushReplacementNamed(
               AppRoutes.productsOverviewScreen.name,
@@ -44,7 +44,7 @@ class AppDrawer extends StatelessWidget {
           ),
           ...drawnerItemm(
             context,
-            "Pedidos",
+            'Pedidos',
             Icons.payment,
             () => Navigator.of(context).pushReplacementNamed(
               AppRoutes.orders.name,

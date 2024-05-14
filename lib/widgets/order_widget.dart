@@ -19,59 +19,67 @@ class _OrderWidgetState extends State<OrderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Card(
-          margin: const EdgeInsets.all(10),
-          child: ListTile(
-            title: Text('R\$ ${widget.order.total.toStringAsFixed(2)}'),
-            subtitle: Text(
-              DateFormat('dd/MM/yyyy hh:mm').format(widget.order.date),
+    final itemsHeight = (widget.order.products.length * 25) + 10;
+
+    return AnimatedContainer(
+      duration: const Duration(
+        milliseconds: 300,
+      ),
+      height: _expanded ? itemsHeight.toDouble() + 92 : 92,
+      child: Card(
+        margin: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('R\$ ${widget.order.total.toStringAsFixed(2)}'),
+              subtitle: Text(
+                DateFormat('dd/MM/yyyy hh:mm').format(widget.order.date),
+              ),
+              trailing: IconButton(
+                icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+                onPressed: () => setState(() {
+                  _expanded = !_expanded;
+                }),
+              ),
             ),
-            trailing: IconButton(
-              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-              onPressed: () => setState(() {
-                _expanded = !_expanded;
-              }),
-            ),
-          ),
+            AnimatedContainer(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 4,
+              ),
+              height: _expanded ? itemsHeight.toDouble() : 0,
+              duration: const Duration(
+                milliseconds: 300,
+              ),
+              child: ListView(
+                children: widget.order.products
+                    .map(
+                      (product) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            product.title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${product.quantity}x R\$ ${product.price}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            )
+          ],
         ),
-        Visibility(
-          visible: _expanded,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 4,
-            ),
-            height: (widget.order.products.length * 25) + 10,
-            child: ListView(
-              children: widget.order.products
-                  .map(
-                    (product) => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          product.title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '${product.quantity}x R\$ ${product.price}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-        )
-      ],
+      ),
     );
   }
 }

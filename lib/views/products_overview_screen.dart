@@ -42,8 +42,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ))
         .catchError(
       (e) {
-        Environment.showErrorMessage(context, e.toString());
-        setState(() => _isLoading = false);
+        Environment.showErrorMessage(
+          context,
+          e.toString(),
+        ).then(
+          (_) => setState(() => _isLoading = false),
+        );
       },
     );
   }
