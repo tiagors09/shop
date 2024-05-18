@@ -25,6 +25,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 product.title,
+                style: TextStyle(color:Colors.white,),
               ),
               background: Stack(
                 fit: StackFit.expand,
@@ -61,7 +62,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     horizontal: 0,
                   ),
                   child: Text(
-                    'R\$ ${product.price}',
+                    'R\$ ${product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 20,
