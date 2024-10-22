@@ -62,7 +62,12 @@ class AppDrawer extends StatelessWidget {
             context,
             'Sair',
             Icons.exit_to_app,
-            () => Provider.of<Auth>(context, listen: false).logout(),
+            () {
+              Provider.of<Auth>(context, listen: false).logout();
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.auth.name,
+              );
+            },
           ),
         ],
       ),
